@@ -9,10 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-#map { width:100%; height:65vh; border-radius:var(--radius); }
-.map-wrap { position:relative; }
-.ol-mouse-pos { bottom:8px; left:80px; background:oklch(1 0 0 / 0.85); padding:3px 10px; border-radius:4px; font-size:0.8rem; position:absolute; z-index:10; }
-@media(max-width:640px){ #map { height:45vh; } }
+#map { width:100%; height:70vh; border-radius:var(--radius); }
+@media(max-width:640px){ #map { height:50vh; } }
 </style>
 </head>
 <body>
@@ -30,26 +28,48 @@
 <main class="main">
   <div class="section-header">
     <h2>Interactive WebGIS</h2>
-    <p>PM₂.₅ Annual Mean Aggregation Change, 2023 minus 2021, over the Netherlands.</p>
+    <p>PM₂.₅ Annual Mean Aggregation Change, 2023 minus 2021, over the Netherlands. GeoServer WMS layers.</p>
   </div>
 
+  <!-- Map container -->
   <div class="map-wrap">
     <div id="map"></div>
     <div class="bm-wrap">
-      <div class="bm-btn active" data-bm="osm" onclick="switchBase('osm')"><div class="bm-icon">&#x1F5FA;</div>OSM</div>
+      <div class="bm-btn active" data-bm="osm" onclick="switchBase('osm')">&#x1F5FA;<br>OSM</div>
       <div class="bm-btn" data-bm="carto" onclick="switchBase('carto')"><div class="bm-icon" style="background:#2c3e50">&#x1F319;</div>Dark</div>
       <div class="bm-btn" data-bm="sat" onclick="switchBase('sat')"><div class="bm-icon" style="background:#5a6b7c">&#x1F4F7;</div>Sat</div>
     </div>
   </div>
 
-  <div class="map-legend">
-    <h4>PM₂.₅ Change (2023&minus;2021) &mdash; AMAC</h4>
+  <!-- Layer Controls -->
+  <div class="map-legend" style="margin-top:16px">
+    <h4>Layer Controls</h4>
+    <label style="display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;font-size:0.9rem">
+      <input type="checkbox" id="layer-lcc" checked onchange="toggleLayer('lcc')"> LCC (Land Cover Change)
+    </label>
+    <label style="display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;font-size:0.9rem">
+      <input type="checkbox" id="layer-amac" checked onchange="toggleLayer('amac')"> AMAC (PM₂.₅ Change 2021–2023)
+    </label>
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.9rem">
+      <input type="checkbox" id="layer-boundary" checked onchange="toggleLayer('boundary')"> Netherlands Boundary
+    </label>
+  </div>
+
+  <!-- Legend -->
+  <div class="map-legend" style="margin-top:12px">
+    <h4>AMAC — PM₂.₅ Change (2023&minus;2021)</h4>
     <div class="leg-row"><span class="leg-swatch" style="background:#053061"></span> Strong improvement (&lt;&minus;10 &mu;g/m&sup3;)</div>
     <div class="leg-row"><span class="leg-swatch" style="background:#4393c3"></span> &minus;10 to &minus;5</div>
     <div class="leg-row"><span class="leg-swatch" style="background:#92c5de"></span> &minus;5 to &minus;2</div>
     <div class="leg-row"><span class="leg-swatch" style="background:#d1e5f0"></span> Improvement (&minus;2 to &minus;0.5)</div>
-    <div class="leg-row" style="margin-bottom:0"><span class="leg-swatch" style="background:transparent;border:1px dashed #999"></span> Stable (&minus;0.5 to 0.5)</div>
-    <p style="margin-top:14px;font-size:0.82rem;color:var(--ink-muted)">All values are negative throughout the study area &mdash; air quality improved everywhere in the Netherlands between 2021 and 2023. Data: CAMS European Air Quality Reanalysis, 0.1&deg; resolution.</p>
+    <div class="leg-row"><span class="leg-swatch" style="background:transparent;border:1px dashed #999"></span> Stable (&minus;0.5 to 0.5)</div>
+    <p style="margin-top:12px;font-size:0.82rem;color:var(--ink-muted)">All values negative — air quality improved everywhere in the Netherlands 2021–2023. Data: CAMS European Air Quality Reanalysis.</p>
+  </div>
+
+  <!-- Click Info -->
+  <div class="map-legend" style="margin-top:12px" id="click-info" style="display:none">
+    <h4>Pixel Info</h4>
+    <p id="click-text" style="font-size:0.9rem;color:var(--ink-soft)">Click on the map to query pixel values.</p>
   </div>
 </main>
 
@@ -60,32 +80,55 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.min.js"></script>
 <script>
+// === GeoServer WMS Config ===
+// 本地开发用 localhost，发布到 GitHub Pages 时改成真实地址
+const GEOSERVER = 'http://localhost:8088/geoserver'; // 改为: 'http://www.gis-geoserver.polimi.it/geoserver'
+const WORKSPACE = 'gis_lab_group2';
+
+// === Basemaps ===
 const osm = new ol.layer.Tile({ source: new ol.source.OSM(), visible: true });
 const carto = new ol.layer.Tile({ source: new ol.source.XYZ({ url: 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' }), visible: false });
 const sat = new ol.layer.Tile({ source: new ol.source.XYZ({ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' }), visible: false });
 
-const amac = new ol.layer.Image({
-  source: new ol.source.ImageStatic({
-    url: 'img/amac_overview.png',
-    projection: 'EPSG:4326',
-    imageExtent: [3.300, 50.700, 7.200, 53.600]
+// === GeoServer WMS Layers ===
+const lccLayer = new ol.layer.Tile({
+  source: new ol.source.TileWMS({
+    url: GEOSERVER + '/wms',
+    params: { LAYERS: WORKSPACE + ':lcc_raster', TILED: true, FORMAT: 'image/png' },
+    serverType: 'geoserver',
+    crossOrigin: 'anonymous'
   }),
-  opacity: 0.85
+  opacity: 0.8,
+  name: 'lcc'
 });
 
-const bound = new ol.layer.Vector({
+const amacLayer = new ol.layer.Tile({
+  source: new ol.source.TileWMS({
+    url: GEOSERVER + '/wms',
+    params: { LAYERS: WORKSPACE + ':amac_raster', TILED: true, FORMAT: 'image/png' },
+    serverType: 'geoserver',
+    crossOrigin: 'anonymous'
+  }),
+  opacity: 0.8,
+  name: 'amac'
+});
+
+// === Boundary (vector) ===
+const boundLayer = new ol.layer.Vector({
   source: new ol.source.Vector({
     features: [new ol.Feature({ geometry: new ol.geom.Polygon([[[3.35,50.75],[7.20,50.75],[7.20,53.56],[3.35,53.56],[3.35,50.75]]]) })]
   }),
   style: new ol.style.Style({
     stroke: new ol.style.Stroke({ color: '#e34d59', width: 2 }),
     fill: new ol.style.Fill({ color: 'rgba(227,77,89,0.04)' })
-  })
+  }),
+  name: 'boundary'
 });
 
+// === Map ===
 const map = new ol.Map({
   target: 'map',
-  layers: [osm, carto, sat, amac, bound],
+  layers: [osm, carto, sat, lccLayer, amacLayer, boundLayer],
   view: new ol.View({ projection: 'EPSG:4326', center: [5.25, 52.15], zoom: 8, maxZoom: 14, minZoom: 6 }),
   controls: ol.control.defaults.defaults({ attributionOptions: { collapsible: false } }).extend([
     new ol.control.ScaleLine({ units: 'metric' }),
@@ -94,10 +137,73 @@ const map = new ol.Map({
   ])
 });
 
+// === Layer Toggle ===
+function toggleLayer(name) {
+  const layers = map.getLayers().getArray();
+  const layer = layers.find(l => l.get('name') === name);
+  if (layer) layer.setVisible(!layer.getVisible());
+}
+
+// === Basemap Switch ===
 function switchBase(name) {
   osm.setVisible(name==='osm'); carto.setVisible(name==='carto'); sat.setVisible(name==='sat');
   document.querySelectorAll('.bm-btn').forEach(el => el.classList.toggle('active', el.dataset.bm===name));
 }
+
+// === Click Info ===
+const infoEl = document.getElementById('click-text');
+map.on('singleclick', function(evt) {
+  const coord = ol.proj.toLonLat(evt.coordinate);
+  const viewResolution = map.getView().getResolution();
+
+  // Query LCC and AMAC layers
+  const lccUrl = lccLayer.getSource().getGetFeatureInfoUrl(
+    evt.coordinate, viewResolution, 'EPSG:4326',
+    { INFO_FORMAT: 'application/json', FEATURE_COUNT: 1 }
+  );
+  const amacUrl = amacLayer.getSource().getGetFeatureInfoUrl(
+    evt.coordinate, viewResolution, 'EPSG:4326',
+    { INFO_FORMAT: 'application/json', FEATURE_COUNT: 1 }
+  );
+
+  let html = '<strong>Coordinates:</strong> ' + coord[0].toFixed(4) + ', ' + coord[1].toFixed(4) + '<br>';
+
+  if (lccUrl) {
+    fetch(lccUrl)
+      .then(r => r.json())
+      .then(data => {
+        if (data.features && data.features.length > 0) {
+          const val = data.features[0].properties;
+          const keys = Object.keys(val);
+          const value = val[keys.find(k => k !== 'Shape')];
+          html += '<strong>LCC:</strong> ' + (value !== null ? value : 'No data') + '<br>';
+        } else {
+          html += '<strong>LCC:</strong> No data<br>';
+        }
+        document.getElementById('click-text').innerHTML = html;
+      })
+      .catch(() => { html += '<strong>LCC:</strong> Error<br>'; document.getElementById('click-text').innerHTML = html; });
+  }
+
+  if (amacUrl) {
+    fetch(amacUrl)
+      .then(r => r.json())
+      .then(data => {
+        if (data.features && data.features.length > 0) {
+          const val = data.features[0].properties;
+          const keys = Object.keys(val);
+          const value = val[keys.find(k => k !== 'Shape')];
+          html += '<strong>AMAC (PM₂.₅):</strong> ' + (value !== null ? value.toFixed(3) + ' µg/m³' : 'No data');
+        } else {
+          html += '<strong>AMAC (PM₂.₅):</strong> No data';
+        }
+        document.getElementById('click-text').innerHTML = html;
+      })
+      .catch(() => { html += '<strong>AMAC:</strong> Error'; document.getElementById('click-text').innerHTML = html; });
+  }
+
+  document.getElementById('click-info').style.display = 'block';
+});
 </script>
 </body>
 </html>
