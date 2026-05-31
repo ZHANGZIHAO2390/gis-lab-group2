@@ -22,18 +22,17 @@
         .legend-section { margin-bottom: 10px; }
         .legend-section:last-child { margin-bottom: 0; }
         .legend-section h5 { margin: 0 0 4px 0; font-size: 12px; color: #636e72; }
-        .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 12px; color: #2d3436; }
-        .legend-color { width: 18px; height: 12px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
     <div class="webgis-page">
         <nav style="flex-shrink:0;">
-            <a href="index.html" class="logo">AirQuality NL</a>
+            <a href="index.html" class="logo">&#127758; Air<span>Quality</span> NL</a>
             <ul>
                 <li><a href="index.html">Home</a></li>
                 <li><a href="results.html">Results</a></li>
                 <li><a href="webgis.html" class="active">WebGIS</a></li>
+                <li><a href="data.html">Data & Methods</a></li>
             </ul>
         </nav>
 
@@ -48,9 +47,12 @@
 
             <div class="separator"></div>
 
-            <label><input type="checkbox" checked onchange="toggleLayer('PM2.5 Change (AMAC)', this.checked)"> PM2.5 Change (AMAC)</label>
-            <label><input type="checkbox" checked onchange="toggleLayer('LCC (Land Cover Change)', this.checked)"> LCC (Land Cover)</label>
-            <label><input type="checkbox" checked onchange="toggleLayer('Province Boundaries', this.checked)"> Province Boundaries</label>
+            <label><input type="checkbox" checked onchange="toggleLayer('NO2-Population Bivariate', this.checked)"> Bivariate Map</label>
+            <label><input type="checkbox" checked onchange="toggleLayer('Province Boundaries', this.checked)"> Provinces</label>
+            <label><input type="checkbox" checked onchange="toggleLayer('NO2 Dissolved Zones', this.checked)"> NO2 Zones</label>
+            <div class="separator"></div>
+            <label><input type="checkbox" onchange="toggleLayer('AMAC (PM2.5 Change 2021-2023)', this.checked)"> PM2.5 AMAC</label>
+            <label><input type="checkbox" onchange="toggleLayer('LCC (Land Cover Change)', this.checked)"> Land Cover</label>
 
             <div class="separator"></div>
             <span style="color:#636e72;font-size:13px;">&#9432; Click a province for details</span>
@@ -61,22 +63,16 @@
         <div id="legend-panel">
             <h4>Map Legend</h4>
             <div class="legend-section">
-                <h5>PM2.5 Change (AMAC) 2021-2023</h5>
-                <div class="legend-item"><span class="legend-color" style="background:#053061"></span> &lt; -10 (Strong improvement)</div>
-                <div class="legend-item"><span class="legend-color" style="background:#4393c3"></span> -10 to -5</div>
-                <div class="legend-item"><span class="legend-color" style="background:#92c5de"></span> -5 to -2</div>
-                <div class="legend-item"><span class="legend-color" style="background:#d1e5f0"></span> -2 to -0.5</div>
-                <div class="legend-item"><span class="legend-color" style="background:transparent;border:1px dashed #aaa"></span> -0.5 to 0.5 (Stable)</div>
-            </div>
-            <div class="legend-section">
-                <h5>LCC (Land Cover Change)</h5>
-                <div class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Stable Crops (505)</div>
-                <div class="legend-item"><span class="legend-color" style="background:#e67e22"></span> Gain (new Crops)</div>
-                <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Loss (Crops to other)</div>
+                <h5>NO&#8322;-Population Bivariate</h5>
+                <div id="biv-legend-content"></div>
             </div>
             <div class="legend-section">
                 <h5>Province Boundaries</h5>
                 <div class="legend-item"><span class="legend-color" style="background:rgba(44,110,73,0.08);border:1.5px solid #2d3436;"></span> Province outline</div>
+            </div>
+            <div class="legend-section">
+                <h5>NO&#8322; Dissolved Zones</h5>
+                <div id="pol-legend-content"></div>
             </div>
         </div>
     </div>
