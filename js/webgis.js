@@ -158,7 +158,7 @@ function createWMSLayer(name, title, visible, opacity) {
     });
 }
 
-const amacLayer = createWMSLayer('amac_raster', 'AMAC (PM2.5 Change 2021-2023)', false, 0.85);
+const amacLayer = createWMSLayer('amac_raster', 'AMAC (PM2.5 Change)', false, 0.85);
 const lccLayer = createWMSLayer('lcc_raster', 'LCC (Land Cover Change)', false, 0.75);
 
 // --- Map ---
@@ -196,7 +196,7 @@ function setBaseLayer(name) {
 
 // --- Layer Visibility Toggles ---
 function toggleLayer(name, visible) {
-    [bivariateLayer, provinceLayer, dissolvedLayer].forEach(function(layer) {
+    [bivariateLayer, provinceLayer, dissolvedLayer, amacLayer, lccLayer].forEach(function(layer) {
         if (layer.get('title') === name) {
             layer.setVisible(visible);
         }
