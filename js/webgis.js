@@ -30,8 +30,8 @@ const satelliteLayer = new ol.layer.Tile({
 
 // === Province Boundaries (from data.js) ===
 const provinceStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({ color: '#e74c3c', width: 2 }),
-    fill: new ol.style.Fill({ color: 'rgba(231,77,89,0.04)' })
+    stroke: new ol.style.Stroke({ color: '#2d3436', width: 1.5 }),
+    fill: new ol.style.Fill({ color: 'rgba(44,110,73,0.08)' })
 });
 
 const provinceHighlightStyle = new ol.style.Style({

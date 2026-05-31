@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.2/ol.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { margin: 0; overflow: hidden; }
-        .webgis-page { display: flex; flex-direction: column; height: 100vh; position: relative; }
+        body { margin: 0; background: var(--surface); }
+        .webgis-page { display: flex; flex-direction: column; height: calc(100vh - 56px); position: relative; }
         #map { flex: 1; width: 100%; }
         .custom-mouse-position { font-size: 12px; font-family: monospace; padding: 4px 8px; background: rgba(255,255,255,0.9); border-radius: 4px; }
         #legend-panel {
@@ -28,14 +28,15 @@
 </head>
 <body>
     <div class="webgis-page">
-        <nav style="flex-shrink:0;">
-            <a href="index.html" class="logo">&#127758; Air<span>Quality</span> NL</a>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="results.html">Results</a></li>
-                <li><a href="webgis.html" class="active">WebGIS</a></li>
-                <li><a href="data.html">Data &amp; Methods</a></li>
-            </ul>
+        <nav class="nav" style="flex-shrink:0;">
+            <div class="nav-inner">
+                <a href="index.html" class="nav-brand">GIS Lab <em>·</em> Group 2</a>
+                <div class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="results.html">Results</a>
+                    <a href="webgis.html" class="active">WebGIS</a>
+                </div>
+            </div>
         </nav>
 
         <div class="map-toolbar">
