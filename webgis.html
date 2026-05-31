@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGIS — Netherlands Air Quality Monitoring</title>
+    <title>WebGIS - Netherlands Air Quality Monitoring</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.5.2/ol.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { margin: 0; background: var(--surface); }
-        .webgis-page { display: flex; flex-direction: column; height: calc(100vh - 56px); position: relative; }
+        body { margin: 0; overflow: hidden; }
+        .webgis-page { display: flex; flex-direction: column; height: 100vh; position: relative; }
         #map { flex: 1; width: 100%; }
+        .ol-popup { font-size: 13px; }
+        .ol-popup table td { padding: 2px 8px; }
         .custom-mouse-position { font-size: 12px; font-family: monospace; padding: 4px 8px; background: rgba(255,255,255,0.9); border-radius: 4px; }
         #legend-panel {
             position: absolute; bottom: 40px; right: 10px; z-index: 100;
@@ -22,21 +24,17 @@
         .legend-section h5 { margin: 0 0 4px 0; font-size: 12px; color: #636e72; }
         .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 12px; color: #2d3436; }
         .legend-color { width: 18px; height: 12px; border-radius: 2px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
-        .biv-legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; }
-        .biv-cell { width: 32px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; border: 1px solid #eee; }
     </style>
 </head>
 <body>
     <div class="webgis-page">
-        <nav class="nav" style="flex-shrink:0;">
-            <div class="nav-inner">
-                <a href="index.html" class="nav-brand">GIS Lab <em>·</em> Group 2</a>
-                <div class="nav-links">
-                    <a href="index.html">Home</a>
-                    <a href="results.html">Results</a>
-                    <a href="webgis.html" class="active">WebGIS</a>
-                </div>
-            </div>
+        <nav style="flex-shrink:0;">
+            <a href="index.html" class="logo">AirQuality NL</a>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="results.html">Results</a></li>
+                <li><a href="webgis.html" class="active">WebGIS</a></li>
+            </ul>
         </nav>
 
         <div class="map-toolbar">
@@ -47,10 +45,13 @@
                     <option value="Satellite">Satellite</option>
                 </select>
             </label>
+
             <div class="separator"></div>
-            <label><input type="checkbox" checked onchange="toggleLayer('AMAC (PM2.5 Change)', this.checked)"> AMAC (PM₂.₅ Change)</label>
+
+            <label><input type="checkbox" checked onchange="toggleLayer('PM2.5 Change (AMAC)', this.checked)"> PM2.5 Change (AMAC)</label>
             <label><input type="checkbox" checked onchange="toggleLayer('LCC (Land Cover Change)', this.checked)"> LCC (Land Cover)</label>
-            <label><input type="checkbox" checked onchange="toggleLayer('Province Boundaries', this.checked)"> Provinces</label>
+            <label><input type="checkbox" checked onchange="toggleLayer('Province Boundaries', this.checked)"> Province Boundaries</label>
+
             <div class="separator"></div>
             <span style="color:#636e72;font-size:13px;">&#9432; Click a province for details</span>
         </div>
@@ -60,18 +61,18 @@
         <div id="legend-panel">
             <h4>Map Legend</h4>
             <div class="legend-section">
-                <h5>AMAC (PM₂.₅ Change 2023–2021)</h5>
-                <div class="legend-item"><span class="legend-color" style="background:#053061"></span> &lt; −10 µg/m³ (strong)</div>
-                <div class="legend-item"><span class="legend-color" style="background:#4393c3"></span> −10 to −5</div>
-                <div class="legend-item"><span class="legend-color" style="background:#92c5de"></span> −5 to −2</div>
-                <div class="legend-item"><span class="legend-color" style="background:#d1e5f0"></span> −2 to −0.5</div>
-                <div class="legend-item"><span class="legend-color" style="background:#f7f7f7;border:1px dashed #aaa"></span> −0.5 to 0.5 (stable)</div>
+                <h5>PM2.5 Change (AMAC) 2021-2023</h5>
+                <div class="legend-item"><span class="legend-color" style="background:#053061"></span> &lt; -10 (Strong improvement)</div>
+                <div class="legend-item"><span class="legend-color" style="background:#4393c3"></span> -10 to -5</div>
+                <div class="legend-item"><span class="legend-color" style="background:#92c5de"></span> -5 to -2</div>
+                <div class="legend-item"><span class="legend-color" style="background:#d1e5f0"></span> -2 to -0.5</div>
+                <div class="legend-item"><span class="legend-color" style="background:transparent;border:1px dashed #aaa"></span> -0.5 to 0.5 (Stable)</div>
             </div>
             <div class="legend-section">
                 <h5>LCC (Land Cover Change)</h5>
                 <div class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Stable Crops (505)</div>
                 <div class="legend-item"><span class="legend-color" style="background:#e67e22"></span> Gain (new Crops)</div>
-                <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Loss (Crops → other)</div>
+                <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Loss (Crops to other)</div>
             </div>
             <div class="legend-section">
                 <h5>Province Boundaries</h5>
