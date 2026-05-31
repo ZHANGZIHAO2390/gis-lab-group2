@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebGIS — GIS Lab Group 2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.2.1/ol.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+#map { width:100%; height:65vh; border-radius:var(--radius); }
+.map-wrap { position:relative; }
+.ol-mouse-pos { bottom:8px; left:80px; background:oklch(1 0 0 / 0.85); padding:3px 10px; border-radius:4px; font-size:0.8rem; position:absolute; z-index:10; }
+@media(max-width:640px){ #map { height:45vh; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">GIS Lab <em>·</em> Group 2</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html">Results</a>
+      <a href="webgis.html" class="active">WebGIS</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="section-header">
+    <h2>Interactive WebGIS</h2>
+    <p>PM₂.₅ Annual Mean Aggregation Change, 2023 minus 2021, over the Netherlands.</p>
+  </div>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="bm-wrap">
+      <div class="bm-btn active" data-bm="osm" onclick="switchBase('osm')"><div class="bm-icon">&#x1F5FA;</div>OSM</div>
+      <div class="bm-btn" data-bm="carto" onclick="switchBase('carto')"><div class="bm-icon" style="background:#2c3e50">&#x1F319;</div>Dark</div>
+      <div class="bm-btn" data-bm="sat" onclick="switchBase('sat')"><div class="bm-icon" style="background:#5a6b7c">&#x1F4F7;</div>Sat</div>
+    </div>
+  </div>
+
+  <div class="map-legend">
+    <h4>PM₂.₅ Change (2023&minus;2021) &mdash; AMAC</h4>
+    <div class="leg-row"><span class="leg-swatch" style="background:#053061"></span> Strong improvement (&lt;&minus;10 &mu;g/m&sup3;)</div>
+    <div class="leg-row"><span class="leg-swatch" style="background:#4393c3"></span> &minus;10 to &minus;5</div>
+    <div class="leg-row"><span class="leg-swatch" style="background:#92c5de"></span> &minus;5 to &minus;2</div>
+    <div class="leg-row"><span class="leg-swatch" style="background:#d1e5f0"></span> Improvement (&minus;2 to &minus;0.5)</div>
+    <div class="leg-row" style="margin-bottom:0"><span class="leg-swatch" style="background:transparent;border:1px dashed #999"></span> Stable (&minus;0.5 to 0.5)</div>
+    <p style="margin-top:14px;font-size:0.82rem;color:var(--ink-muted)">All values are negative throughout the study area &mdash; air quality improved everywhere in the Netherlands between 2021 and 2023. Data: CAMS European Air Quality Reanalysis, 0.1&deg; resolution.</p>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>GIS Laboratory A.A. 2025/26 &mdash; Politecnico di Milano</p>
+  <p>Group 2 &mdash; Netherlands Case Study &mdash; ID 11040508</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/ol@v10.2.1/dist/ol.min.js"></script>
+<script>
+const osm = new ol.layer.Tile({ source: new ol.source.OSM(), visible: true });
+const carto = new ol.layer.Tile({ source: new ol.source.XYZ({ url: 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' }), visible: false });
+const sat = new ol.layer.Tile({ source: new ol.source.XYZ({ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' }), visible: false });
+
+const amac = new ol.layer.Image({
+  source: new ol.source.ImageStatic({
+    url: 'img/amac_overview.png',
+    projection: 'EPSG:4326',
+    imageExtent: [3.300, 50.700, 7.200, 53.600]
+  }),
+  opacity: 0.85
+});
+
+const bound = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    features: [new ol.Feature({ geometry: new ol.geom.Polygon([[[3.35,50.75],[7.20,50.75],[7.20,53.56],[3.35,53.56],[3.35,50.75]]]) })]
+  }),
+  style: new ol.style.Style({
+    stroke: new ol.style.Stroke({ color: '#e34d59', width: 2 }),
+    fill: new ol.style.Fill({ color: 'rgba(227,77,89,0.04)' })
+  })
+});
+
+const map = new ol.Map({
+  target: 'map',
+  layers: [osm, carto, sat, amac, bound],
+  view: new ol.View({ projection: 'EPSG:4326', center: [5.25, 52.15], zoom: 8, maxZoom: 14, minZoom: 6 }),
+  controls: ol.control.defaults.defaults({ attributionOptions: { collapsible: false } }).extend([
+    new ol.control.ScaleLine({ units: 'metric' }),
+    new ol.control.FullScreen(),
+    new ol.control.MousePosition({ coordinateFormat: ol.coordinate.createStringXY(4), projection: 'EPSG:4326', className: 'custom-mouse-position' })
+  ])
+});
+
+function switchBase(name) {
+  osm.setVisible(name==='osm'); carto.setVisible(name==='carto'); sat.setVisible(name==='sat');
+  document.querySelectorAll('.bm-btn').forEach(el => el.classList.toggle('active', el.dataset.bm===name));
+}
+</script>
+</body>
+</html>

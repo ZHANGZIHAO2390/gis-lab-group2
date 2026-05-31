@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIS Lab — Mapping Air Quality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">GIS Lab <em>·</em> Group 2</a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="results.html">Results</a>
+      <a href="webgis.html">WebGIS</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">Politecnico di Milano · A.A. 2025/26</div>
+    <h1>Mapping Air Quality</h1>
+    <p class="hero-sub">Land cover transitions and population exposure in the Netherlands, analyzed through open geospatial data and GIS processing.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px">
+      <a href="results.html" class="btn-primary">View Results</a>
+      <a href="webgis.html" class="btn-secondary">Open WebGIS</a>
+    </div>
+    <div class="hero-badges" style="margin-top:32px">
+      <span class="hero-badge">Student A · NO₂ · Built</span>
+      <span class="hero-badge">Student B · PM₁₀ · Trees</span>
+      <span class="hero-badge">Student C · PM₂.₅ · Crops</span>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+  <section class="section">
+    <div class="section-header">
+      <h2>Project Overview</h2>
+      <p>Investigating correlations between land surface dynamics and atmospheric trends across the Netherlands.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <h3>Objectives</h3>
+        <ul>
+          <li>Detect land cover transitions between 2021 and 2023 using ESRI 10m data</li>
+          <li>Correlate changes with PM₂.₅, NO₂, and PM₁₀ trends from CAMS reanalysis</li>
+          <li>Assess population exposure across land use zones at GAUL L2 level</li>
+          <li>Build an interactive WebGIS to visualize results</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Study Area</h3>
+        <p><strong>Netherlands</strong> — a densely populated country in Western Europe, characterized by intensive agriculture, urban development, and significant land use dynamics. Assigned as Group 2 case study for the GIS Laboratory project.</p>
+      </div>
+      <div class="card">
+        <h3>Data Sources</h3>
+        <ul>
+          <li><strong>CAMS</strong> European Air Quality Reanalysis (0.1&deg;)</li>
+          <li><strong>ESRI</strong> 10m Annual Land Cover (2017-2024)</li>
+          <li><strong>WorldPop</strong> Population Counts (100m, 2023)</li>
+          <li><strong>GAUL</strong> Administrative Boundaries (Level 2)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Processing Workflow</h2>
+    </div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-num">1</div>
+        <div class="wf-content">
+          <h4>Pollutant Mapping</h4>
+          <p>NetCDF to monthly aggregation, annual averages, EU concentration classification, and change detection (2023-2021).</p>
+        </div>
+      </div>
+      <div class="wf-arrow">&darr;</div>
+      <div class="wf-step">
+        <div class="wf-num">2</div>
+        <div class="wf-content">
+          <h4>Land Cover Change</h4>
+          <p>ESRI tile reprojection to WGS84, VRT merge, boundary clip, and raster calculation (LC₂₀₂₁ &times; 100 + LC₂₀₂₃).</p>
+        </div>
+      </div>
+      <div class="wf-arrow">&darr;</div>
+      <div class="wf-step">
+        <div class="wf-num">3</div>
+        <div class="wf-content">
+          <h4>Correlation &amp; Exposure</h4>
+          <p>Binary change masks, zonal statistics, population overlay at GAUL L2, and bivariate mapping.</p>
+        </div>
+      </div>
+      <div class="wf-arrow">&darr;</div>
+      <div class="wf-step">
+        <div class="wf-num">4</div>
+        <div class="wf-content">
+          <h4>WebGIS &amp; Website</h4>
+          <p>OpenLayers interactive map with AMAC overlay, basemap switching, and group member results.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Team</h2>
+    </div>
+    <div class="grid-3">
+      <div class="member-card">
+        <div class="member-badge" style="background:#0052d9">A</div>
+        <h4>Student 11115258</h4>
+        <div class="member-detail"><span>Pollutant</span><span>NO₂</span></div>
+        <div class="member-detail"><span>Land Cover</span><span>Built Area (Code 7)</span></div>
+      </div>
+      <div class="member-card">
+        <div class="member-badge" style="background:#00a870">B</div>
+        <h4>Student 11137138</h4>
+        <div class="member-detail"><span>Pollutant</span><span>PM₁₀</span></div>
+        <div class="member-detail"><span>Land Cover</span><span>Trees (Code 2)</span></div>
+      </div>
+      <div class="member-card accent">
+        <div class="member-badge" style="background:#e34d59">C</div>
+        <h4>Student 11040508</h4>
+        <div class="member-detail"><span>Pollutant</span><span>PM₂.₅</span></div>
+        <div class="member-detail"><span>Land Cover</span><span>Crops (Code 5)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>Tools</h2>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">QGIS 3.40</span>
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">GDAL</span>
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">Python (xarray, rasterio)</span>
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">OpenLayers</span>
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">GeoServer</span>
+      <span style="padding:6px 18px;border-radius:20px;background:var(--surface-elevated);border:1px solid var(--border);font-size:0.85rem;font-weight:500">GRASS GIS</span>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>GIS Laboratory A.A. 2025/26 &mdash; Politecnico di Milano</p>
+  <p>Group 2 &mdash; Netherlands Case Study &mdash; ID 11040508</p>
+</footer>
+</body>
+</html>

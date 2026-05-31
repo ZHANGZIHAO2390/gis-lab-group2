@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results — GIS Lab Group 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">GIS Lab <em>·</em> Group 2</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="results.html" class="active">Results</a>
+      <a href="webgis.html">WebGIS</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="section-header">
+    <h2>Processing Results</h2>
+    <p>Netherlands &mdash; Air quality and land cover change analysis, 2021 to 2023</p>
+  </div>
+
+  <!-- Student C: PM2.5 -->
+  <div class="result-card">
+    <div class="step-label">PM₂.₅ Analysis</div>
+    <h3>Student C &mdash; PM₂.₅ Annual Trends</h3>
+    <p>CAMS reanalysis data processed from hourly NetCDF to monthly aggregates, then annual averages for 2021 and 2023.</p>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="lbl">2021 Annual Mean</div><div class="val">9.63 &mu;g/m&sup3;</div></div>
+      <div class="stat-box"><div class="lbl">2023 Annual Mean</div><div class="val" style="color:var(--brand)">8.14 &mu;g/m&sup3;</div></div>
+      <div class="stat-box"><div class="lbl">Change (AMAC)</div><div class="val" style="color:var(--accent-red)">&minus;1.49 &mu;g/m&sup3;</div></div>
+    </div>
+    <p><strong>EU concentration classes</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Class</th><th>Range</th><th>Label</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>&le; 5 &mu;g/m&sup3;</td><td><span class="tag tag-green">Good</span></td></tr>
+          <tr><td>2</td><td>5 &ndash; 10 &mu;g/m&sup3;</td><td><span class="tag tag-blue">Moderate</span></td></tr>
+          <tr><td>3</td><td>10 &ndash; 20 &mu;g/m&sup3;</td><td><span class="tag tag-amber">Fair</span></td></tr>
+          <tr><td>4</td><td>20 &ndash; 25 &mu;g/m&sup3;</td><td><span class="tag tag-red">Poor</span></td></tr>
+          <tr><td>5</td><td>&gt; 25 &mu;g/m&sup3;</td><td><span class="tag tag-red" style="background:oklch(0.93 0.06 30 / 0.5)">Very Poor</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Land Cover Transition -->
+  <div class="result-card">
+    <div class="step-label">Step 5 &middot; Crops (Code 5)</div>
+    <h3>Land Cover Transition Analysis</h3>
+    <p>LC₂₀₂₁ &times; 100 + LC₂₀₂₃ transition codes, classified into Stable (505), Gain, and Loss for Crops.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Indicator</th><th>Value</th><th>Category</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Stability (Persistence)</strong></td><td class="stat-val">95.5%</td><td>N/A (Baseline)</td></tr>
+          <tr><td>Primary Source of Gain</td><td class="stat-val">42.9%</td><td>Rangeland (Code 11)</td></tr>
+          <tr><td>Secondary Source of Gain</td><td class="stat-val">27.9%</td><td>Built Area (Code 7)</td></tr>
+          <tr><td>Tertiary Source of Gain</td><td class="stat-val">21.0%</td><td>Trees (Code 2)</td></tr>
+          <tr><td>Primary Destination of Loss</td><td class="stat-val">40.5%</td><td>Built Area (Code 7)</td></tr>
+          <tr><td>Secondary Destination of Loss</td><td class="stat-val">36.1%</td><td>Rangeland (Code 11)</td></tr>
+          <tr><td>Tertiary Destination of Loss</td><td class="stat-val">18.4%</td><td>Trees (Code 2)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Zonal Statistics -->
+  <div class="result-card">
+    <div class="step-label">Step 6 &middot; PM₂.₅ &times; Crops</div>
+    <h3>Zonal Statistics &mdash; PM₂.₅ Change by Crops Zone</h3>
+    <p>Binary mask, polygonize, dissolve, and zonal statistics (mean, min, max). QGIS manual processing.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zone</th><th>Mean (&mu;g/m&sup3;)</th><th>Min</th><th>Max</th><th>Std Dev</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Stable Crops</strong></td><td class="stat-val neg">&minus;1.483</td><td>&minus;2.258</td><td>&minus;0.519</td><td>0.339</td></tr>
+          <tr><td><strong>Gain (New Crops)</strong></td><td class="stat-val neg">&minus;1.511</td><td>&minus;2.258</td><td>&minus;0.519</td><td>0.320</td></tr>
+          <tr><td><strong>Loss (Crops &rarr; Other)</strong></td><td class="stat-val neg">&minus;1.564</td><td>&minus;2.258</td><td>&minus;0.519</td><td>0.340</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-box">
+      <img src="img/pm2p5_crops_zonal_stats.png" alt="PM2.5 zonal statistics bar chart">
+    </div>
+    <p><strong>Interpretation.</strong> PM₂.₅ decreased across all Crops zones. The Loss zone shows the strongest decrease (&minus;1.564 &mu;g/m&sup3;), while Stable Crops areas show slightly less reduction (&minus;1.483 &mu;g/m&sup3;). Differences between zones are modest, suggesting land cover type has a limited influence on PM₂.₅ trends at the national scale.</p>
+  </div>
+
+  <!-- Population Exposure -->
+  <div class="result-card">
+    <div class="step-label">Steps 7-8 &middot; Population Exposure</div>
+    <h3>Population Exposure Assessment</h3>
+    <p>WorldPop population data overlaid with PM₂.₅ concentration classes at GAUL L2 administrative level (342 regions).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>PM₂.₅ Class</th><th>Label</th><th>Exposed Population</th><th>Percentage</th></tr></thead>
+        <tbody>
+          <tr><td>2</td><td>Moderate (5&ndash;10 &mu;g/m&sup3;)</td><td><strong>17,787,670</strong></td><td class="stat-val">99.69%</td></tr>
+          <tr><td>3</td><td>Fair (10&ndash;20 &mu;g/m&sup3;)</td><td>54,825</td><td>0.31%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pie-wrap">
+      <div class="pie-vis" style="background:conic-gradient(var(--brand) 0deg 358.8deg, var(--accent-amber) 358.8deg 360deg)"></div>
+      <div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--brand)"></span> Moderate (99.69%)</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--accent-amber)"></span> Fair (0.31%)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group Comparison -->
+  <div class="result-card">
+    <div class="step-label">Group Summary</div>
+    <h3>Land Cover Stability Comparison</h3>
+    <p>All members analyzed the same QGIS-processed LCC raster clipped to the Netherlands boundary.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Member</th><th>Class</th><th>Stable Pixels</th><th>Stability Rate</th></tr></thead>
+        <tbody>
+          <tr><td>A (NO₂)</td><td>Built Area (Code 7)</td><td>83,060,702</td><td><span class="tag tag-green">96.2%</span></td></tr>
+          <tr><td>B (PM₁₀)</td><td>Trees (Code 2)</td><td>49,934,471</td><td><span class="tag tag-green">90.9%</span></td></tr>
+          <tr><td>C (PM₂.₅)</td><td>Crops (Code 5)</td><td>256,682,512</td><td><span class="tag tag-green">95.5%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <p>GIS Laboratory A.A. 2025/26 &mdash; Politecnico di Milano</p>
+  <p>Group 2 &mdash; Netherlands Case Study &mdash; ID 11040508</p>
+</footer>
+</body>
+</html>
